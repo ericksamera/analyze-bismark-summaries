@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Output dirs from process-bismark-coverage.py
+summaries/
+individual_primer/

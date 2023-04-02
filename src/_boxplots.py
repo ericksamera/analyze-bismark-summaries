@@ -5,7 +5,7 @@ Purpose: Script generates a box plot of methylation from a list of files that ar
 """
 __author__ = "Erick Samera"
 __version__ = "1.0.0"
-__comments__ = ""
+__comments__ = "Stable enough."
 # -----------------------------------------------------------------------------
 from argparse import (
     Namespace,

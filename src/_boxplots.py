@@ -136,7 +136,7 @@ def _filter_positions_by_rep(_input_dict: dict, args: Namespace) -> dict:
         
         position_counts = Counter(position_represenation)
         max_rep = max(position_counts.values())
-        allowed_positions = [key for key, value in position_counts.items() if value/max_rep > args.min_pos_rep]
+        allowed_positions = [key for key, value in position_counts.items() if value/max_rep >= args.min_pos_rep]
 
         for sample, position_dict in samples_dict.items():
             output_dict[primer][sample] = {}

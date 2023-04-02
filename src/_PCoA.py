@@ -241,7 +241,6 @@ def _generate_pcoa_dict(_matrices_dict: dict, _samples_dict: dict) -> tuple:
     for primer, matrix_dicts in _matrices_dict.items():
         if not list(matrix_dicts.values()): continue
         summated_distance_matrix = _sum_matrices_dict(matrix_dicts.values(), len(_samples_dict[primer]))
-        print(summated_distance_matrix.shape)
         distance_matrix_object = DistanceMatrix(summated_distance_matrix, _samples_dict[primer])
         pcoa_result = stats.ordination.pcoa(distance_matrix_object)
         per_primer_pcoa_dict[primer] = pcoa_result
@@ -274,7 +273,6 @@ def _plot_PCoA(_input_dict: dict, _metadata_dict: dict, _output_dir: Path, _outp
         elif primer not in _plot_offset: _plot_offset[primer] = {'start': overall_counter}
         _pca_by_sample: dict = {}
         colors_dict = {key: value for key, value in zip(_metadata_dict[primer], colors)}
-
         for sample, x, y, z in zip(_input_dict[primer].samples.index, list(_input_dict[primer].samples['PC1']), list(_input_dict[primer].samples['PC2']), list(_input_dict[primer].samples['PC3'])):
             overall_counter += 1
             if sample not in _pca_by_sample: 
@@ -292,7 +290,8 @@ def _plot_PCoA(_input_dict: dict, _metadata_dict: dict, _output_dir: Path, _outp
                 y=_pca_by_sample[sample]['y'],
                 z=_pca_by_sample[sample]['z'],
                 mode='markers',
-                name=sample, 
+                name=sample,
+                visible=False,
                 marker=dict(
                     size=markersize,
                     symbol=markerstyle,
@@ -308,12 +307,18 @@ def _plot_PCoA(_input_dict: dict, _metadata_dict: dict, _output_dir: Path, _outp
                 method = 'update',
                 args = [
                     {'visible': _generate_truth_list(_plot_offset[primer], overall_counter)},
-                    {'title':f'({primer}) PCoA across all CpG positions<br><sup>v{__version__} : {__author__} | {__comments__}   </sup>',
-                     'showlegend':True}]))
+                    {'title':
+                        f'({primer}) PCoA across all CpG positions<br>'+
+                        f'<sup>v{__version__} : {__author__} | {__comments__}</sup>',
+                    'scene.xaxis': {'title': f'PCA1 ({_input_dict[primer].proportion_explained[0]*100:.2f} %)'},
+                    'scene.yaxis': {'title': f'PCA2 ({_input_dict[primer].proportion_explained[1]*100:.2f} %)'},
+                    'scene.zaxis': {'title': f'PCA3 ({_input_dict[primer].proportion_explained[3]*100:.2f} %)'},
+                    'showlegend':True}]))
+    
 
     fig.update_layout(
         updatemenus=[go.layout.Updatemenu(
-            active=2,
+            active=0,
             buttons=buttons_list)])
 
     camera = dict(eye=dict(x=0., y=0., z=1))

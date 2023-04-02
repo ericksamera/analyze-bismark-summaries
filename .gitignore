@@ -131,3 +131,6 @@ dmypy.json
 # Output dirs from process-bismark-coverage.py
 summaries/
 individual_primer/
+
+# Outputs from this tool
+**/*.html

@@ -40,6 +40,9 @@ def get_args() -> Namespace:
         type=Path,
         default=Path.cwd(),
         help=f"directory for output")
+    parser.add_argument('-N', '--no-ref-values',
+        action='store_false',
+        help=f"include reference values: 100% methylation, 50% methylation, 0% methylation")
 
     group_csv_filtering = parser.add_argument_group('csv filtering options')
     group_csv_filtering.add_argument('-m', '--min-reads',
@@ -178,7 +181,7 @@ def _generate_dicts(_input_csv_paths: list, args: Namespace) -> tuple:
                 _methylation_dict[primer][sample_id][position_key]: float = float(line_dict['methylation_percentage'])
                 _coverage_dict[primer][sample_id][position_key]: int = int(coverage)
     return _filter_positions_by_rep(_methylation_dict, args), _filter_positions_by_rep(_coverage_dict, args)
-def _transform_dict(_input_primer_dict: dict, add_reference_vals: bool=True) -> dict:
+def _transform_dict(_input_primer_dict: dict, add_reference_vals: bool) -> dict:
     """
     """
     _reference_vals = {
@@ -210,14 +213,14 @@ def _generate_distance_matrix(_input_dict: dict) -> list:
             distances.append(cohens_h)
         matrix.append(distances)
     return matrix
-def _generate_matrices_dict(_input_dict: dict, add_reference_vals: bool=True) -> tuple:
+def _generate_matrices_dict(_input_dict: dict, add_reference_vals: bool) -> tuple:
     """
     """
     matrices = {}
     samples = {}
     for primer in _input_dict:
         matrices[primer], samples[primer] = {}, {}
-        positions_dict: dict = _transform_dict(_input_dict[primer])
+        positions_dict: dict = _transform_dict(_input_dict[primer], add_reference_vals)
         samples_list = [sample_name for sample_name in _input_dict[primer] if _input_dict[primer][sample_name]]
         if len(samples_list) < 2: continue
         samples[primer] = samples_list
@@ -292,6 +295,8 @@ def _plot_PCoA(_input_dict: dict, _metadata_dict: dict, _output_dir: Path, _outp
                 mode='markers',
                 name=sample,
                 visible=False,
+                hovertemplate='<b>%{text}</b><extra></extra>',
+                text=[sample for i in _pca_by_sample[sample]],
                 marker=dict(
                     size=markersize,
                     symbol=markerstyle,
@@ -321,7 +326,7 @@ def _plot_PCoA(_input_dict: dict, _metadata_dict: dict, _output_dir: Path, _outp
             active=0,
             buttons=buttons_list)])
 
-    camera = dict(eye=dict(x=0., y=0., z=1))
+    camera = dict(eye=dict(x=0., y=0., z=2))
     fig.update_layout(
         title_text=f'PCoA of samples across all CpG positions<br><sup>v{__version__} : {__author__} | {__comments__}   </sup>',
         autosize=True, scene_camera=camera)
@@ -332,7 +337,7 @@ def pcoa_wrapper(args: Namespace) -> None:
     """
     """
     methylation_dict, metadata_dict = _generate_dicts(args.input_path, args)
-    matrices_dict, samples_dict = _generate_matrices_dict(methylation_dict)
+    matrices_dict, samples_dict = _generate_matrices_dict(methylation_dict, args.no_ref_values)
     pcoa_dict = _generate_pcoa_dict(matrices_dict, samples_dict)
     _plot_PCoA(
         _input_dict=pcoa_dict, 

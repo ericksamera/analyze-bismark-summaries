@@ -8,7 +8,7 @@ INPUT=individual_primer/*
 
 for PROGRAM in '_boxplots.py' '_PCoA.py'
 do
-    echo "[LOG] `date`: Started $PROGRAM !" 2>&1 | tee -a $LOGFILE
+    echo "[LOG] `date`: Started $PROGRAM ..." 2>&1 | tee -a $LOGFILE
     (time (\
         python src/$PROGRAM \
             $INPUT \

@@ -255,7 +255,7 @@ def _generate_truth_list(_offset_dict: dict, max_value: int) -> list:
     while len(truth_list) < max_value:
         truth_list += [False]    
     return(truth_list)
-def _plot_PCoA(_input_dict: dict, _metadata_dict: dict, _output_dir: Path, _output_prefix: str='', _export: bool=True, _show: bool=True) -> None:
+def _plot_PCoA(_input_dict: dict, _metadata_dict: dict, _output_dir: Path, _output_prefix: str='', _export: bool=True, _show: bool=False) -> None:
     """
     """
 

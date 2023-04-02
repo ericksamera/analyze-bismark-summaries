@@ -22,7 +22,9 @@ methylation statistics.
 Alternatively use the provided `environment.yml` file to create a conda
 environment containing all the prequisites.
 
-    `conda env create --name methylation-analysis --file=environment.yml`
+```
+conda env create --name methylation-analysis --file=environment.yml
+```
 
 ## Usage
 TODO: add some actual usage descriptions.
